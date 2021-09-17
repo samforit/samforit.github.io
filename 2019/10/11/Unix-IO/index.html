@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="b_0mBmwqCie592u0n7rs3m3-xIrzk4bdTPkxtfkAHk4">
+  <meta name="baidu-site-verification" content="code-1hg0Pc3qcy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"samforit.github.io","root":"/","images":"/images","scheme":"Pisces","version":"8.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="前言之前打算总结一下Java的BIO（IO），AIO，NIO，最后一步步深入，发现Unix（Linux）的IO模型需要提前掌握，所以先总结一下Unix的IO模型。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unix的五种IO模型介绍">
+<meta property="og:url" content="https://samforit.github.io/2019/10/11/Unix-IO/">
+<meta property="og:site_name" content="三木">
+<meta property="og:description" content="前言之前打算总结一下Java的BIO（IO），AIO，NIO，最后一步步深入，发现Unix（Linux）的IO模型需要提前掌握，所以先总结一下Unix的IO模型。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://samforit.github.io/2019/10/11/Unix-IO/linux-kernal-user.png">
+<meta property="og:image" content="https://samforit.github.io/2019/10/11/Unix-IO/1-BIO.jpg">
+<meta property="og:image" content="https://samforit.github.io/2019/10/11/Unix-IO/2-NIO.jpg">
+<meta property="og:image" content="https://samforit.github.io/2019/10/11/Unix-IO/3-MIO.jpg">
+<meta property="og:image" content="https://samforit.github.io/2019/10/11/Unix-IO/4-SIO.jpg">
+<meta property="og:image" content="https://samforit.github.io/2019/10/11/Unix-IO/5-AIO.jpg">
+<meta property="og:image" content="https://samforit.github.io/2019/10/11/Unix-IO/6-IO.jpg">
+<meta property="article:published_time" content="2019-10-11T12:00:45.000Z">
+<meta property="article:modified_time" content="2021-09-17T08:31:27.067Z">
+<meta property="article:author" content="samforit">
+<meta property="article:tag" content="IO">
+<meta property="article:tag" content="Unix">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://samforit.github.io/2019/10/11/Unix-IO/linux-kernal-user.png">
+
+
+<link rel="canonical" href="https://samforit.github.io/2019/10/11/Unix-IO/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://samforit.github.io/2019/10/11/Unix-IO/","path":"2019/10/11/Unix-IO/","title":"Unix的五种IO模型介绍"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Unix的五种IO模型介绍 | 三木</title>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?f5aa3900758b56175a8ff0efb075e4bd"></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">三木</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Sam的一亩三分地</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">2.</span> <span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Java-IO-%E4%B8%8E-Unix-IO-%E7%9A%84%E5%85%B3%E7%B3%BB%EF%BC%88%E9%9D%9E%E4%B8%A5%E6%A0%BC%E5%AF%B9%E5%BA%94%EF%BC%89"><span class="nav-number">2.1.</span> <span class="nav-text">Java IO 与 Unix IO 的关系（非严格对应）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%9A%84%E5%86%85%E6%A0%B8%E6%80%81%E5%92%8C%E7%94%A8%E6%88%B7%E6%80%81"><span class="nav-number">2.2.</span> <span class="nav-text">数据的内核态和用户态</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Unix%E4%BA%94%E7%A7%8DIO%E6%A8%A1%E5%9E%8B%E5%88%86%E5%88%AB%E4%BB%8B%E7%BB%8D"><span class="nav-number">3.</span> <span class="nav-text">Unix五种IO模型分别介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%BB%E5%A1%9E%E5%BC%8FIO"><span class="nav-number">3.1.</span> <span class="nav-text">阻塞式IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9D%9E%E9%98%BB%E5%A1%9EIO"><span class="nav-number">3.2.</span> <span class="nav-text">非阻塞IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8"><span class="nav-number">3.3.</span> <span class="nav-text">IO多路复用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BF%A1%E5%8F%B7%E9%A9%B1%E5%8A%A8IO"><span class="nav-number">3.4.</span> <span class="nav-text">信号驱动IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5IO"><span class="nav-number">3.5.</span> <span class="nav-text">异步IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B1%87%E6%80%BB%E5%AF%B9%E6%AF%94"><span class="nav-number">3.6.</span> <span class="nav-text">汇总对比</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E4%BB%8B%E7%BB%8D"><span class="nav-number">4.</span> <span class="nav-text">系统调用介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Java%E7%9A%84NIO%E8%80%81%E7%89%88%E6%9C%AC%E4%BD%BF%E7%94%A8%E7%9A%84%E6%98%AFselect%E6%A8%A1%E5%BC%8F%EF%BC%8C%E4%BD%86%E5%90%8E%E6%9D%A5%E6%94%B9%E6%88%90%E4%BA%86epoll%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">4.0.1.</span> <span class="nav-text">1.Java的NIO老版本使用的是select模式，但后来改成了epoll，为什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Java%E6%9C%89%E7%9C%9F%E6%AD%A3%E7%9A%84AIO%E6%A8%A1%E5%BC%8F%E5%90%97%EF%BC%9F"><span class="nav-number">4.0.2.</span> <span class="nav-text">2.Java有真正的AIO模式吗？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%96%E5%B1%B1%E4%B9%8B%E7%9F%B3"><span class="nav-number">5.</span> <span class="nav-text">他山之石</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="samforit"
+      src="/sam_images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">samforit</p>
+  <div class="site-description" itemprop="description">我买了一辆自行车，除了铃铛不响，其他周身都在响</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">12</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/samforit" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;samforit" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:samforit@gmail.com" title="E-Mail → mailto:samforit@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://samforit.github.io/2019/10/11/Unix-IO/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/sam_images/avatar.jpg">
+      <meta itemprop="name" content="samforit">
+      <meta itemprop="description" content="我买了一辆自行车，除了铃铛不响，其他周身都在响">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="三木">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Unix的五种IO模型介绍
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-10-11 20:00:45" itemprop="dateCreated datePublished" datetime="2019-10-11T20:00:45+08:00">2019-10-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-09-17 16:31:27" itemprop="dateModified" datetime="2021-09-17T16:31:27+08:00">2021-09-17</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/IO/" itemprop="url" rel="index"><span itemprop="name">IO</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/IO/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>之前打算总结一下Java的<strong>BIO（IO），AIO，NIO</strong>，最后一步步深入，发现Unix（Linux）的IO模型需要提前掌握，所以先总结一下Unix的IO模型。</p>
+<span id="more"></span>
+
+<h1 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h1><h2 id="Java-IO-与-Unix-IO-的关系（非严格对应）"><a href="#Java-IO-与-Unix-IO-的关系（非严格对应）" class="headerlink" title="Java IO 与 Unix IO 的关系（非严格对应）"></a>Java IO 与 Unix IO 的关系（非严格对应）</h2><p>Unix网络编程中介绍了五种IO模型，分别是：阻塞IO、非阻塞IO、IO多路复用、信号驱动IO、异步IO。<br>Java的IO模型与Unix的IO模型的对应关系如下所示（这个对应关系并不严格）：</p>
+<table>
+<thead>
+<tr>
+<th>Java-IO模型</th>
+<th>Unix-IO模型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>BIO</td>
+<td>阻塞式IO</td>
+</tr>
+<tr>
+<td>NIO</td>
+<td>IO多路复用</td>
+</tr>
+<tr>
+<td>AIO</td>
+<td>异步IO</td>
+</tr>
+</tbody></table>
+<h2 id="数据的内核态和用户态"><a href="#数据的内核态和用户态" class="headerlink" title="数据的内核态和用户态"></a>数据的内核态和用户态</h2><img src="/2019/10/11/Unix-IO/linux-kernal-user.png" class="">
+<p>在进行IO模型讲解之前，先讲讲数据的两个状态：内核态和用户态。<br>我们将文件从磁盘加载到内存中。操作系统是怎么做的？<br>第一步：因为我们的所有程序，都是和操作系统的内核进行交互，所以文件首先是从磁盘加载到内核，这时候文件是处于内核态。<br>第二步：文件从内核再加载到内存中，应用程序此时才可以在内存中进行读写操作。这个时候的文件就是内核态。<br>所以Unix的五种IO模型的不同指出，就是这两个步骤的处理流程不同。</p>
+<h1 id="Unix五种IO模型分别介绍"><a href="#Unix五种IO模型分别介绍" class="headerlink" title="Unix五种IO模型分别介绍"></a>Unix五种IO模型分别介绍</h1><h2 id="阻塞式IO"><a href="#阻塞式IO" class="headerlink" title="阻塞式IO"></a>阻塞式IO</h2><img src="/2019/10/11/Unix-IO/1-BIO.jpg" class="">
+<p>这种模式很简单，系统给调用<strong>recvfrom</strong>函数之后，线程一直处于等待状态，一直等到：<br>第一步文件加载到内核态完成，第二步文件加载到用户态完成。</p>
+<h2 id="非阻塞IO"><a href="#非阻塞IO" class="headerlink" title="非阻塞IO"></a>非阻塞IO</h2><img src="/2019/10/11/Unix-IO/2-NIO.jpg" class="">
+<p>系统不停的通过<strong>recvfrom</strong>进行轮询，一直到第一步完成，然后在第二步阻塞式的将数据从内核态加载到用户态。<br>这里的非阻塞IO模式，主要是指第一步，加载数据到内核态，这个过程是非阻塞的，通过轮询来判断数据是否在内核准备好。</p>
+<h2 id="IO多路复用"><a href="#IO多路复用" class="headerlink" title="IO多路复用"></a>IO多路复用</h2><img src="/2019/10/11/Unix-IO/3-MIO.jpg" class="">
+<p>系统首先通过select，阻塞式的查看内核数据是否准备完毕。<br>当内核数据加载完成之后，系统会调用<strong>recvfrom</strong>，将内核态的数据加载到用户态。<br>这里看起来第一步和第二步都是阻塞式操作，但是，select可以在极小代价的情况下，同时处理多个文件句柄（包括socket）。</p>
+<h2 id="信号驱动IO"><a href="#信号驱动IO" class="headerlink" title="信号驱动IO"></a>信号驱动IO</h2><img src="/2019/10/11/Unix-IO/4-SIO.jpg" class="">
+<p>第一步，相当于系统注册一个回调函数，当内核数据准备好了之后通知我。<br>此时系统可以做其他的事情，并不需要阻塞式的等待内核数据。<br>第二步，阻塞式调用<strong>recvfrom</strong>，将内核的数据加载到用户态。</p>
+<h2 id="异步IO"><a href="#异步IO" class="headerlink" title="异步IO"></a>异步IO</h2><img src="/2019/10/11/Unix-IO/5-AIO.jpg" class="">
+<p>这个模型在理论上来说，是真正的异步模型，因为在以上四种模型中，在第二步：数据从内核态加载到用户态，都是同步操作。<br>而在该模型中，系统在加载文件的时候，只需要通过aio_read注册一个回调，当文件完成了内核态，用户态的加载之后，通知当前系统。<br>在这个过程中，系统不用等待，可以执行其他的运算任务。</p>
+<h2 id="汇总对比"><a href="#汇总对比" class="headerlink" title="汇总对比"></a>汇总对比</h2><img src="/2019/10/11/Unix-IO/6-IO.jpg" class="">
+<p>这张图是对以上五种IO模型的汇总比较，总的来说，越靠后的模型在理论上来说就越高效。<br>前面的四种IO模型【阻塞IO、非阻塞IO、IO多路复用、信号驱动IO】，都属于同步IO，只有最后一种模型是真正的异步【异步IO】</p>
+<h1 id="系统调用介绍"><a href="#系统调用介绍" class="headerlink" title="系统调用介绍"></a>系统调用介绍</h1><div class="note warning"><h3 id="1-Java的NIO老版本使用的是select模式，但后来改成了epoll，为什么？"><a href="#1-Java的NIO老版本使用的是select模式，但后来改成了epoll，为什么？" class="headerlink" title="1.Java的NIO老版本使用的是select模式，但后来改成了epoll，为什么？"></a>1.Java的NIO老版本使用的是select模式，但后来改成了epoll，为什么？</h3><p>因为select是轮询的模式，不停的检查文件句柄的状态。<br>epoll是callback的模式，当文件句柄准备好了之后，直接进行回调，更高效。</p>
+</div>
+
+<div class="note warning"><h3 id="2-Java有真正的AIO模式吗？"><a href="#2-Java有真正的AIO模式吗？" class="headerlink" title="2.Java有真正的AIO模式吗？"></a>2.Java有真正的AIO模式吗？</h3><p>在Windows系统下，通过IOCP实现。<br>在Linux系统下，没有，因为Linux系统下的AIO底层仍是epoll。<br>（个人猜测，这也是为什么Netty使用了NIO，而没有使用AIO）</p>
+</div>
+
+<h1 id="他山之石"><a href="#他山之石" class="headerlink" title="他山之石"></a>他山之石</h1><p>以对话的形式讲述，比较易于理解<br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg3MjA4MTExMw==&mid=2247484746&idx=1&sn=c0a7f9129d780786cabfcac0a8aa6bb7&source=41#wechat_redirect">漫话：如何给女朋友解释什么是Linux的五种IO模型？</a></p>
+<p>数据的内核态，用户态，这篇文章也有讲到，同时介绍了高效的数据传输方式：zero-copy<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/u013256816/article/details/52589524">zero-copy</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>感谢支持!</div>
+  <button>
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/sam_images/weixin.png" alt="samforit 微信">
+        <span>微信</span>
+      </div>
+      <div>
+        <img src="/sam_images/zhifubao.png" alt="samforit 支付宝">
+        <span>支付宝</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/IO/" rel="tag"># IO</a>
+              <a href="/tags/Unix/" rel="tag"># Unix</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2018/11/11/javascript-post-form/" rel="prev" title="javascript模拟post表单提交">
+                  <i class="fa fa-chevron-left"></i> javascript模拟post表单提交
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/10/12/Java-IO-1/" rel="next" title="Java-IO(上) BIO、NIO、AIO介绍">
+                  Java-IO(上) BIO、NIO、AIO介绍 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">samforit</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.12.0/dist/mermaid.min.js","integrity":"sha256-0dD7vUjUCTGJjeLnPotQQJIcSzug5fO6WDMYYyNIX4c="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"samforit/blog-comment","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>
