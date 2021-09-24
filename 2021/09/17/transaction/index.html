@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+  <meta name="google-site-verification" content="b_0mBmwqCie592u0n7rs3m3-xIrzk4bdTPkxtfkAHk4">
+  <meta name="baidu-site-verification" content="code-1hg0Pc3qcy">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"samforit.github.io","root":"/","images":"/images","scheme":"Pisces","version":"8.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<meta name="description" content="简介事务是什么？事务不是一个天然存在的东西，它是被人为创造出来，目的是简化应用层的编程模型。有了事务，应用程序可以不用考虑某些内部潜在的错误以及复杂的井发性问题，这些都可以交给数据库来负责处理，我们称之为安全性保证。即：事务是一种数据安全性保证的机制。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="事务-概览">
+<meta property="og:url" content="https://samforit.github.io/2021/09/17/transaction/">
+<meta property="og:site_name" content="三木">
+<meta property="og:description" content="简介事务是什么？事务不是一个天然存在的东西，它是被人为创造出来，目的是简化应用层的编程模型。有了事务，应用程序可以不用考虑某些内部潜在的错误以及复杂的井发性问题，这些都可以交给数据库来负责处理，我们称之为安全性保证。即：事务是一种数据安全性保证的机制。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/car_invoices.png">
+<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/avoid_uncommited_read.png">
+<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/cannot_repeated_read.png">
+<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/repeatedable_read_impl.png">
+<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/virtual_read_of_two_doctor.png">
+<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/much_lock.png">
+<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/mvcc1.png">
+<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/mvcc2.png">
+<meta property="article:published_time" content="2021-09-17T08:37:23.000Z">
+<meta property="article:modified_time" content="2021-09-24T12:46:44.774Z">
+<meta property="article:author" content="samforit">
+<meta property="article:tag" content="sql">
+<meta property="article:tag" content="transaction">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://samforit.github.io/2021/09/17/transaction/car_invoices.png">
+
+
+<link rel="canonical" href="https://samforit.github.io/2021/09/17/transaction/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://samforit.github.io/2021/09/17/transaction/","path":"2021/09/17/transaction/","title":"事务-概览"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>事务-概览 | 三木</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5MKHCJJN3W"></script>
+  <script class="next-config" data-name="google_analytics" type="application/json">{"tracking_id":"G-5MKHCJJN3W","only_pageview":false}</script>
+  <script src="/js/third-party/analytics/google-analytics.js"></script>
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?97cbe2fb2ecf209c1a8fc1b73bd473a7"></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">三木</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Sam的一亩三分地</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E5%85%A8%E6%80%A7%E4%BF%9D%E8%AF%81"><span class="nav-number">1.1.</span> <span class="nav-text">安全性保证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E5%88%86%E7%B1%BB"><span class="nav-number">1.2.</span> <span class="nav-text">事务隔离级别分类</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%BB-%E6%9C%AA%E6%8F%90%E4%BA%A4"><span class="nav-number">2.</span> <span class="nav-text">读-未提交</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%BB-%E6%8F%90%E4%BA%A4"><span class="nav-number">3.</span> <span class="nav-text">读-提交</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E8%AF%BB-%E6%8F%90%E4%BA%A4"><span class="nav-number">3.1.</span> <span class="nav-text">实现读-提交</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB%EF%BC%88%E5%BF%AB%E7%85%A7%E9%9A%94%E7%A6%BB%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">可重复读（快照隔离）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB%EF%BC%88%E5%BF%AB%E7%85%A7%E7%BA%A7%E5%88%AB%E9%9A%94%E7%A6%BB%EF%BC%89"><span class="nav-number">4.1.</span> <span class="nav-text">实现可重复读（快照级别隔离）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%B2%E8%A1%8C%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">串行化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%B2%E8%A1%8C%E5%8C%96%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88"><span class="nav-number">5.1.</span> <span class="nav-text">串行化实现方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%B8%A5%E6%A0%BC%E4%B8%B2%E8%A1%8C%E6%89%A7%E8%A1%8C%EF%BC%88Redis%E4%B8%BA%E4%BB%A3%E8%A1%A8%EF%BC%89"><span class="nav-number">5.1.1.</span> <span class="nav-text">1.严格串行执行（Redis为代表）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%B8%A4%E9%98%B6%E6%AE%B5%E5%8A%A0%E9%94%81%EF%BC%88two-phase-locking%EF%BC%89"><span class="nav-number">5.1.2.</span> <span class="nav-text">2.两阶段加锁（two-phase locking）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%AF%E4%B8%B2%E8%A1%8C%E5%8C%96%E7%9A%84%E5%BF%AB%E7%85%A7%E9%9A%94%E7%A6%BB-Serializable-Snapshot-Isolation%EF%BC%8CSSI"><span class="nav-number">5.1.3.</span> <span class="nav-text">3.可串行化的快照隔离(Serializable Snapshot Isolation，SSI)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%98%B2%E6%AD%A2%E6%9B%B4%E6%96%B0%E4%B8%A2%E5%A4%B1"><span class="nav-number">6.</span> <span class="nav-text">防止更新丢失</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9B%B4%E6%96%B0%E4%B8%A2%E5%A4%B1%E5%B8%B8%E8%A7%81%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">6.1.</span> <span class="nav-text">更新丢失常见的解决方案</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">7.</span> <span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="samforit"
+      src="/sam_images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">samforit</p>
+  <div class="site-description" itemprop="description">我买了一辆自行车，除了铃铛不响，其他周身都在响</div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/samforit" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;samforit" rel="noopener" target="_blank"><i class="github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:samforit@gmail.com" title="E-Mail → mailto:samforit@gmail.com" rel="noopener" target="_blank"><i class="envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://samforit.github.io/2021/09/17/transaction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/sam_images/avatar.jpg">
+      <meta itemprop="name" content="samforit">
+      <meta itemprop="description" content="我买了一辆自行车，除了铃铛不响，其他周身都在响">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="三木">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          事务-概览
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-09-17 16:37:23" itemprop="dateCreated datePublished" datetime="2021-09-17T16:37:23+08:00">2021-09-17</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-09-24 20:46:44" itemprop="dateModified" datetime="2021-09-24T20:46:44+08:00">2021-09-24</time>
+      </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h1><div class="note info"><h4 id="事务是什么？"><a href="#事务是什么？" class="headerlink" title="事务是什么？"></a>事务是什么？</h4><p>事务不是一个天然存在的东西，它是被人为创造出来，目的是简化应用层的编程模型。<br>有了事务，应用程序可以不用考虑某些内部潜在的错误以及复杂的井发性问题，这些都可以交给数据库来负责处理，我们称之为安全性保证。<br>即：事务是一种数据安全性保证的机制。</p>
+</div>
+
+<span id="more"></span>
+
+<h2 id="安全性保证"><a href="#安全性保证" class="headerlink" title="安全性保证"></a>安全性保证</h2><table>
+<thead>
+<tr>
+<th align="left">分类</th>
+<th align="left">说明</th>
+<th align="left">备注</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">原子性( Atomicity)</td>
+<td align="left">在出错时中止事务，并将部分完成的写入全部丢弃</td>
+<td align="left">处理异常</td>
+</tr>
+<tr>
+<td align="left">一致性( Consistency)</td>
+<td align="left">本质上要求应用层来维护状态一致(或者恒等)</td>
+<td align="left"></td>
+</tr>
+<tr>
+<td align="left">隔离性( Isolation)</td>
+<td align="left">并发执行的多个事务相互隔离，它们不能互相交叉</td>
+<td align="left">处理并发</td>
+</tr>
+<tr>
+<td align="left">持久性( Durability)</td>
+<td align="left">一旦事务提交成功，即使存在硬件故障或数据库崩溃，事务所写入的任何数据也不会消失</td>
+<td align="left"></td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>原子性，隔离性和持久性是数据库自身的属性，而 ACID中的一致性更多是应用层的属性。<br>应用程序可能借助数据库提供的原子性和隔离性，以达到一致性，但一致性本身并不拥于数据库。<br>因此，字母C其实并不应该属于【事务的安全性保证】。</p>
+</blockquote>
+<h2 id="事务隔离级别分类"><a href="#事务隔离级别分类" class="headerlink" title="事务隔离级别分类"></a>事务隔离级别分类</h2><table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left">隔离级别</th>
+<th align="left">脏读</th>
+<th align="left">不可重复读</th>
+<th align="left">幻读</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">无隔离</td>
+<td align="left">读未提交（Read uncommitted）</td>
+<td align="left">可能</td>
+<td align="left">可能</td>
+<td align="left">可能</td>
+</tr>
+<tr>
+<td align="left">弱隔离</td>
+<td align="left">读已提交（Read committed）</td>
+<td align="left">不可能</td>
+<td align="left">可能</td>
+<td align="left">可能</td>
+</tr>
+<tr>
+<td align="left">弱隔离</td>
+<td align="left">可重复读（Repeatable read）</td>
+<td align="left">不可能</td>
+<td align="left">不可能</td>
+<td align="left">可能</td>
+</tr>
+<tr>
+<td align="left">强隔离</td>
+<td align="left">串行化（Serializable ）</td>
+<td align="left">不可能</td>
+<td align="left">不可能</td>
+<td align="left">不可能</td>
+</tr>
+</tbody></table>
+<div class="note danger"><p>Q：读未提交（Read uncommitted）存在的意义是什么？<br>A：1.防止脏写(下面会讲到)；2.保证原子性(发生错误可以回滚)</p>
+</div>
+
+<h1 id="读-未提交"><a href="#读-未提交" class="headerlink" title="读-未提交"></a>读-未提交</h1><p>读未提交可以提供以下保证：<br>写数据库肘，只会覆盖已成功提交的数据(防止“脏写”)</p>
+<p>首先来看一个【脏写】的示例：<br>买车的时候，需要同时更新【车辆，发票】。</p>
+<img src="/2021/09/17/transaction/car_invoices.png" class="">
+<p>该例最终会导致：Alice拥有发票，Bob拥有车辆。<br>而【读-未提交】可以避免该问题。</p>
+<h1 id="读-提交"><a href="#读-提交" class="headerlink" title="读-提交"></a>读-提交</h1><p>读-提交是最基本的的事务隔离级别，它只提供以下两个保证 :<br>读数据库肘，只能看到已成功提交的数据(防止“脏读”)。<br>写数据库肘，只会覆盖已成功提交的数据(防止“脏写”)。</p>
+<p>【防止脏写】上面我们已经介绍过了，结下来看一下【防止脏读】：<br>举例：用户2只有在用户1的事务提交之后才能看到x的新值</p>
+<img src="/2021/09/17/transaction/avoid_uncommited_read.png" class="">
+
+<h2 id="实现读-提交"><a href="#实现读-提交" class="headerlink" title="实现读-提交"></a>实现读-提交</h2><table>
+<thead>
+<tr>
+<th align="left">实现方式</th>
+<th align="left">说明</th>
+<th align="left">推荐</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">行锁</td>
+<td align="left">修改记录需要获取锁<br>读取记录需要获取锁</td>
+<td align="left">不推荐<br>因为有可能写事件很耗时，导致读事件长期排队</td>
+</tr>
+<tr>
+<td align="left">多版本</td>
+<td align="left">对于每个待更新的对象，数据库都会维护其旧值和当前持锁事务将要设置的新值两个版本。<br>在事务提交之前，所有其他读操作都读取旧值；仅当写事务提交之后，才会切换到读取新值。</td>
+<td align="left">推荐<br>性能更优，只读事务不受写事件影响。</td>
+</tr>
+</tbody></table>
+<div class="note danger"><p>Q1：多版本需要锁吗？<br>A1：需要<br>Q2：通过行锁可以达到上图所示的效果吗（第二次get x 能获取到 2 吗）？<br>A2：不能（因为用户1在进行set x=3时，拿到了x的锁，此时用户2的第二次get x，读操作拿不到锁，会被阻塞）</p>
+</div>
+
+<h1 id="可重复读（快照隔离）"><a href="#可重复读（快照隔离）" class="headerlink" title="可重复读（快照隔离）"></a>可重复读（快照隔离）</h1><div class="note warning"><p>如何定义可重复读？<br>两次读取同一个对象，读到的结果一致？片面</p>
+</div>
+
+
+<p>首先举一个不可重复读的例子：</p>
+<img src="/2021/09/17/transaction/cannot_repeated_read.png" class="">
+<p>假设Alice在银行有1000美元的存款，分为两个账户，每个500美元。<br>现在有这样一笔转账交易：从账户1转100美元到账户2。【可以理解为定投100到理财账户】<br>如果在她提交转账请求之后，而银行数据库系统执行转账的过程中间，来查看两个账户的余额，她有可能会看到账号2在收到转账之前的余额(500美元)，和账户1在完成转账之后的余额(400美元)。<br>对于Alice巳来说，貌似她的账户总共只有900美元，有100美元消失了。<br>这种异常现象被称为不可重复读取(nonrepeatable read)或读倾斜(read skew)。<br>可重复读就是为了解决这种问题。</p>
+<h2 id="实现可重复读（快照级别隔离）"><a href="#实现可重复读（快照级别隔离）" class="headerlink" title="实现可重复读（快照级别隔离）"></a>实现可重复读（快照级别隔离）</h2><p>快照级别隔离的实现通常采用写锁来防止脏写(参阅前面的“实现读-提交”)，这意味着正在进行写操作的事务会阻止同一对象上的其他事务。<br>但是，读取则不需要加锁。<br>从性能角度看，快照级别隔离的一个关键点是读操作不会阻止写操作，反之亦然。<br>如果只是为了提供读-提交级别隔离，而不是完整的快照级别隔离，则只保留对象的两个版本就足够了:一个己提交的旧版本和尚未提交的新版本。<br>所以，支持快照级别隔离的存储引擎往往直接采用MVCC来实现读提交隔离。</p>
+<img src="/2021/09/17/transaction/repeatedable_read_impl.png" class="">
+
+<div class="note info"><h4 id="一致性快照的可见性规则"><a href="#一致性快照的可见性规则" class="headerlink" title="一致性快照的可见性规则"></a>一致性快照的可见性规则</h4><p>通过上图我们可以看出，事务读数据库时，通过事务ID可以决定哪些对象可见，哪些不可见。<br>当以下两个条件都成立，则数据对象对事务可见:<br>1.事务开始的时刻，创建该对象的事务已经完成了提交。<br>2.对象没有被标记为删除；或者即使标记了，但删除事务在当前事务开始的时刻还没有完成提交。<br>可以看出，在事务的开始时刻就已经确定了哪些对象可见，哪些不可见。</p>
+</div>
+
+<h1 id="串行化"><a href="#串行化" class="headerlink" title="串行化"></a>串行化</h1><div class="note danger"><h5 id="Q：【可重复读】级别，还有什么解决不了的问题吗？"><a href="#Q：【可重复读】级别，还有什么解决不了的问题吗？" class="headerlink" title="Q：【可重复读】级别，还有什么解决不了的问题吗？"></a>Q：【可重复读】级别，还有什么解决不了的问题吗？</h5><p>A：幻读 + 写倾斜</p>
+</div>
+
+<p>举例：医院值班室需要保证至少要有1人在岗，现在A和B都在值班室，他们都认为现在有两个人在，自己下班后，还有另一个人在值班室，满足值班室最低1人在岗条件。所以他们都发起了下班请求：</p>
+<img src="/2021/09/17/transaction/virtual_read_of_two_doctor.png" class="">
+<div class="note warning"><h5 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h5><p>幻读：在一个事务中的写入改变了另一个事务查询结果的现象。（从隔离性的角度来说，这种改变确实是不应该被感知到的）<br>写倾斜：事务首先查询数据，根据返回的结果而作出某些决定，然后修改数据库 。当事务提交时，支持决定的前提条件已不再成立。</p>
+</div>
+
+<h2 id="串行化实现方案"><a href="#串行化实现方案" class="headerlink" title="串行化实现方案"></a>串行化实现方案</h2><table>
+<thead>
+<tr>
+<th align="left">方案</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">严格串行执行</td>
+<td align="left">如果每个事务的执行速度非常快，且单个CPU核可以满足事务的吞吐量要求，严格串行执行是一个非常简单有效的方案。</td>
+</tr>
+<tr>
+<td align="left">两阶段加锁</td>
+<td align="left">几十年来，这一直是实现可串行化的标准方式，但还是有很多系统出于性能原因而放弃使用它。</td>
+</tr>
+<tr>
+<td align="left">可串行化的快照隔离 (SSI)</td>
+<td align="left">一种最新的算法，可以避免前面方法的大部分缺点。<br>它秉持乐观预期的原则，允许多个事务并发执行而不互相阻塞。<br>仅当事务尝试提交肘，才检查可能的冲突，如果发现违背了串行化，则某些事务会被中止。</td>
+</tr>
+</tbody></table>
+<h3 id="1-严格串行执行（Redis为代表）"><a href="#1-严格串行执行（Redis为代表）" class="headerlink" title="1.严格串行执行（Redis为代表）"></a>1.严格串行执行（Redis为代表）</h3><p>解决井发问题最直接的方法是避免井发：即在一个线程上按顺序方式每次只执行一个事务。<br>串行执行小结当满足以下约束条件时，串行执行事务可以实现串行化隔离:<br>事务必须简短而高效，否则一个缓慢的事务会影响到所有其他事务的执行性能。<br>仅限于活动数据集完全可以加载到内存的场景。有些很少访问的数据可能会被移到磁盘，但万一单线程事务需要访问它，就会严重拖累性能。<br>写入吞吐量必须足够低，才能在单个CPU核上处理，否则就需要采用分区，最好没有跨分区事务。<br>跨分区事务虽然也可以支持，但是占比必须很小。<br>单线程不能利用多核CPU，这种方案一般不考虑！<br>Q：Redis多分片场景下，支持事务吗？ N</p>
+<h3 id="2-两阶段加锁（two-phase-locking）"><a href="#2-两阶段加锁（two-phase-locking）" class="headerlink" title="2.两阶段加锁（two-phase locking）"></a>2.两阶段加锁（two-phase locking）</h3><p>如果事务A已经读取了某个对象，此时事务B想要写入该对象，那么B必须等到A提交或中止之才能继续。以确保B不会在事务A执行的过程中间去修改对象。<br>如果事务A已经修改了对象，此时事务B想要读取该对象，则B必须等到A提交或中止之后才能继续。对于2PL，不会出现读到旧值的情况。<br>实现两阶段加锁<br>目前，2PL已经用于MySQL(InnoDB)和SQLServer中的“可串行化隔离”，以及DB2中的“可重复读隔离”。<br>此时数据库的每个对象都有一个读写锁来隔离读写操作。即锁可以处于共享模式或独占模式：</p>
+<ol>
+<li>如果事务要读取对象，必须先以共享模式获得锁。可以有多个事务同时获得一个对象的共享锁，但是如果某个事务已经获得了对象的独占锁，则所有其他事务必须等待。 </li>
+<li>如果事务要修改对象，必须以独占模式获取锁。不允许多个事务同时持有锁(包括共享或独占模式)，换言之，如果对象上已被加锁，那么修改事务必须等待。 </li>
+<li>如果事务首先读取对象，然后尝试写入对象，则需要将共享锁升级为独占锁。升级锁的流程等价于直接获得独占锁。 </li>
+<li>事务获得锁之后，一直持有锁直到事务结束(包括提交或中止)。<br>这也是名字“两阶段”的来由，在第一阶段即事务执行之前要获取锁，第二阶段(即事务结束时)则释放锁。</li>
+</ol>
+<h4 id="锁过多会导致的问题：死锁"><a href="#锁过多会导致的问题：死锁" class="headerlink" title="锁过多会导致的问题：死锁"></a>锁过多会导致的问题：死锁</h4><img src="/2021/09/17/transaction/much_lock.png" class="">
+<p>数据库系统会自动检测事务之间的死锁情况，并强行中止其中的一个以打破僵局，这样另一个可以继续向前执行。</p>
+<div class="note danger"><p>但我们需要考虑的问题是：僵局打破后，线程1的数据就应该丢掉吗？应用层是否需要做重试？</p>
+</div>
+
+<h4 id="两阶段加锁升级版"><a href="#两阶段加锁升级版" class="headerlink" title="两阶段加锁升级版"></a>两阶段加锁升级版</h4><table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left">谓词锁</th>
+<th align="left">索引区间锁</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">功能介绍</td>
+<td align="left">它的作用类似于之前描述的共享/独占锁，而区别在于，它并不属于某个特定的对象(如表的某一行)，而是作用于满足某些搜索条件的所有查询对象。谓词锁会限制如下访问:<br>如果事务A想要读取某些搞足匹配条件的对象，例如采用SELECT查询，它必须以共享模式获得查询条件的谓词锁。<br>如果另一个事务B正持有任何一个匹配对象的互斥锁，那么A必须等到B释放锁之后才能继续执行查询。<br>如果事务A想要插入、更新或删除任何对象，则必须首先检查所有旧值和新值是否与现有的任何谓词锁匹配(即冲突)。如果事务B持有这样的谓词锁，那么A必须等到B完成提交(或中止)后才能继续。</td>
+<td align="left">本质上它是对谓词锁的简化或者近似，简化谓词锁的方式是将其保护的对象扩大化，首先这肯定是安全的。</td>
+</tr>
+<tr>
+<td align="left">优点</td>
+<td align="left">这里的关键点在于， 谓词锁甚至可以保护数据库中那些尚不存在但可能马上会被插入的对象(幻读)。</td>
+<td align="left">相比较于谓词锁，开销低得多。</td>
+</tr>
+<tr>
+<td align="left">缺点</td>
+<td align="left">性能不佳:如果活动事务中存在许多锁，那么检查匹配这些锁就变得非常耗时。</td>
+<td align="left">索引区间锁不像谓词锁那么精确，定更大范围的对象，而超出了串行化所要求的部分。</td>
+</tr>
+<tr>
+<td align="left">备注</td>
+<td align="left"></td>
+<td align="left">如果没有合适的索引可以施加区间锁，则数据库可以回退到对整个表加锁。这种方式的性能肯定不好，它甚至会阻止所有其他事务的写操作，但的确可以保证安全性。</td>
+</tr>
+</tbody></table>
+<h3 id="3-可串行化的快照隔离-Serializable-Snapshot-Isolation，SSI"><a href="#3-可串行化的快照隔离-Serializable-Snapshot-Isolation，SSI" class="headerlink" title="3.可串行化的快照隔离(Serializable Snapshot Isolation，SSI)"></a>3.可串行化的快照隔离(Serializable Snapshot Isolation，SSI)</h3><p>悲观与乐观的并发控制<br>两阶段加锁是一种典型的悲观井发控制机制<br>为了提供可串行化的快照隔离，数据库必须检测事务是否会修改其他事务的查询结果，并在此情况下中止写事务。<br>数据库如何知道查询结果是否发生了改变呢?可以分以下两种情况:</p>
+<ol>
+<li>读取是否作用于一个(即将)过期的MVCC对象(读取之前已经有未提交的写入)。 </li>
+<li>检查写人是否影响即将完成的读取(读取之后，又有新的写入)。</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="left">检测是否读取了过期的 MVCC对象</th>
+<th align="left">检测写是否影晌了之前的读</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><img src="/2021/09/17/transaction/mvcc1.png" class=""></td>
+<td align="left"><img src="/2021/09/17/transaction/mvcc2.png" class=""></td>
+</tr>
+<tr>
+<td align="left">为什么要等到提交: 当检测到读旧值，为何不立即中止事务43呢? <br>如果事务43是个只读事务，没有任何写倾斜风险，就不需要中止。 <br>事务提交时，有可能事务42发生了中止或者还处于未提交状态，因此读取的并非是过期值。</td>
+<td align="left">1.事务42和事务43都在查询轮班 1234期间的值班医生。数据库可以通过索引条目1234来记录事务42和事务43都查询了相同的结果。该额外记录只需保留很小一段时间，当并发的所有事务都处理完成(提交或中止)之后，就可以丢弃。<br>2.当另一个事务尝试修改时，它首先检查索引，从而确定是否最近存在一些读目标数据的其他事务。这个过程类似于在受影响的宇段范围上获取写锁，但它并不会阻塞读取，而是直到读事务提交时才进一步通知他们 : 所读到的数据现在已经发生了变化。 <br>3.事务43和事务42会互相通知对方先前的读已经过期。虽然事务43的修改的确影响了事务42，但事务43当时并未提交(修改未生效)， 而事务42首先尝试提交，所以可以成功；随后当事务43试图提交时，来自事务42的冲突写已经提交生效，事务43不得不中止。</td>
+</tr>
+</tbody></table>
+<div class="note info"><h4 id="串行化快照隔离的优点是什么："><a href="#串行化快照隔离的优点是什么：" class="headerlink" title="串行化快照隔离的优点是什么："></a>串行化快照隔离的优点是什么：</h4><ol>
+<li>与两阶段加锁相比，可串行化快照隔离事务不需要等待其他事务所持有的锁。这一点和快照隔离一样 ，读写通常不会互相阻塞。</li>
+<li>与严格串行执行相比，可串行化快照隔离可以突破单个CPU核的限制。</li>
+<li>这样的设计使得查询延迟更加稳定、可预测。</li>
+<li>在一致性快照上执行只读查询不需要任何锁，这对于读密集的负载非常有吸引力。</li>
+</ol>
+</div>
+
+<h1 id="防止更新丢失"><a href="#防止更新丢失" class="headerlink" title="防止更新丢失"></a>防止更新丢失</h1><p>更新丢失发生的场景：<br>应用程序从数据库读取某些值，根据应用逻辑做出修改，然后写回新值。<br>即：read-modify-write</p>
+<h2 id="更新丢失常见的解决方案"><a href="#更新丢失常见的解决方案" class="headerlink" title="更新丢失常见的解决方案"></a>更新丢失常见的解决方案</h2><table>
+<thead>
+<tr>
+<th align="left">解决方案</th>
+<th align="left">示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">原子写操作</td>
+<td align="left"><code>UPDATE counters SET value = value + 1 WHERE key = &quot;foo&quot;;</code></td>
+</tr>
+<tr>
+<td align="left">显式加锁</td>
+<td align="left"><code>SELECT * FROM student WHERE name = &#39;zhangsan&#39; FOR UPDATE;</code></td>
+</tr>
+<tr>
+<td align="left">原子比较和设置</td>
+<td align="left"><code>UPDATE wiki SET content = &#39;new_content&#39; WHERE id = 1234 AND content = &#39;old_content&#39;;</code></td>
+</tr>
+<tr>
+<td align="left">自动检测更新丢失</td>
+<td align="left">数据库完全可以借助快照级别隔离来高效地执行检查（SSI）。<br>但是MySQL/InnoDB的可重复读并不支持检测更新丢失</td>
+</tr>
+</tbody></table>
+<div class="note danger"><p>Q：第三点CAS可靠吗？应用层是不是需要兼容？<br>A：不可靠，如果update失败，则应用层不能盲目的将新数据丢弃，而是应该检测冲突并解决。【或告知用户，本次更新操作存在冲突，需要重新提交】</p>
+</div>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><table>
+<thead>
+<tr>
+<th align="left">问题</th>
+<th align="left">详细解释</th>
+<th align="left">解决方案</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">脏写</td>
+<td align="left">客户端覆盖了另一个客户端尚未提交的写入。</td>
+<td align="left">几乎所有的数据库实现都可以防止脏写。</td>
+</tr>
+<tr>
+<td align="left">脏读</td>
+<td align="left">客户端读到了其他客户端尚未提交的写人。</td>
+<td align="left">读-提交以及更强的隔离级别可以防止脏读 。</td>
+</tr>
+<tr>
+<td align="left">读倾斜(不可重复读)</td>
+<td align="left">客户在不同的时间点看到了不同值。</td>
+<td align="left">可重复读（快照隔离）是最用的防范手段， 即事务总是在某个时间点的一致性快照中读取数据。通常采用多版本井发控制( MVCC )来实现快照隔离。</td>
+</tr>
+<tr>
+<td align="left">幻读</td>
+<td align="left">事务读取了某些符合查询条件的对象，同时另一个客户端执行写入，改变了先前的查询结果。</td>
+<td align="left">快照隔离可以防止简单的幻读（只读查询）。</td>
+</tr>
+<tr>
+<td align="left">写倾斜</td>
+<td align="left">事务首先查询数据，根据返回的结果而作出某些决定，然后修改数据库 。当事务提交时，支持决定的前提条件已不再成立。</td>
+<td align="left">只有可串行化的隔离才能防止这种异常。</td>
+</tr>
+<tr>
+<td align="left">更新丢失</td>
+<td align="left">两个客户端同时执行【读-修改-写入】操作，出现了其中一个覆盖了另一个的写入，但又没有包含对方最新值的情况，最终导致了部分修改数据发生了丢失。</td>
+<td align="left">快照隔离的一些实现（SSI）可以自动防止这种异常。或手动锁定查询结果(SELECT FOR UPDATE)。</td>
+</tr>
+</tbody></table>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/sql/" rel="tag"># sql</a>
+              <a href="/tags/transaction/" rel="tag"># transaction</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/11/12/Github-broker/" rel="prev" title="国内Github加速">
+                  <i class="fa fa-chevron-left"></i> 国内Github加速
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/09/17/distributed-transaction/" rel="next" title="事务-分布式事务">
+                  事务-分布式事务 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 2018 – 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">samforit</span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.12.0/dist/mermaid.min.js","integrity":"sha256-0dD7vUjUCTGJjeLnPotQQJIcSzug5fO6WDMYYyNIX4c="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+  
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"samforit/blog-comment","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>

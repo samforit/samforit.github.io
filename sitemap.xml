@@ -2,6 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://samforit.github.io/2019/10/12/Java-IO/</loc>
+    
+    <lastmod>2021-09-24</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samforit.github.io/2021/09/17/distributed-transaction/</loc>
+    
+    <lastmod>2021-09-24</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samforit.github.io/2021/09/17/transaction/</loc>
+    
+    <lastmod>2021-09-24</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://samforit.github.io/2019/10/11/Unix-IO/</loc>
     
     <lastmod>2021-09-24</lastmod>
@@ -73,13 +94,6 @@
   
   <url>
     <loc>https://samforit.github.io/2020/11/12/Github-broker/</loc>
-    
-    <lastmod>2021-09-17</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://samforit.github.io/2019/10/12/Java-IO/</loc>
     
     <lastmod>2021-09-17</lastmod>
     
@@ -185,6 +199,13 @@
     <priority>0.6</priority>
   </url>
   
+  <url>
+    <loc>https://samforit.github.io/tags/transaction/</loc>
+    <lastmod>2021-09-24</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
 
   
   <url>
@@ -245,6 +266,20 @@
   
   <url>
     <loc>https://samforit.github.io/categories/Mysql/</loc>
+    <lastmod>2021-09-24</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://samforit.github.io/categories/distributed/</loc>
+    <lastmod>2021-09-24</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://samforit.github.io/categories/distributed/transaction/</loc>
     <lastmod>2021-09-24</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
