@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://samforit.github.io/2021/09/17/distributed-transaction/</loc>
+    <loc>https://samforit.github.io/2021/09/17/transaction/</loc>
     
     <lastmod>2021-09-26</lastmod>
     
@@ -11,21 +11,35 @@
   <url>
     <loc>https://samforit.github.io/2019/10/12/Java-IO/</loc>
     
-    <lastmod>2021-09-24</lastmod>
+    <lastmod>2021-09-26</lastmod>
     
   </url>
   
   <url>
-    <loc>https://samforit.github.io/2021/09/17/transaction/</loc>
+    <loc>https://samforit.github.io/2020/04/15/Amazon-S3-401/</loc>
     
-    <lastmod>2021-09-24</lastmod>
+    <lastmod>2021-09-26</lastmod>
     
   </url>
   
   <url>
     <loc>https://samforit.github.io/2019/10/11/Unix-IO/</loc>
     
-    <lastmod>2021-09-24</lastmod>
+    <lastmod>2021-09-26</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samforit.github.io/2018/03/06/mysql-flush-hosts/</loc>
+    
+    <lastmod>2021-09-26</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>https://samforit.github.io/2021/09/17/distributed-transaction/</loc>
+    
+    <lastmod>2021-09-26</lastmod>
     
   </url>
   
@@ -52,13 +66,6 @@
   
   <url>
     <loc>https://samforit.github.io/archives/</loc>
-    
-    <lastmod>2021-09-17</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://samforit.github.io/2018/03/06/mysql-flush-hosts/</loc>
     
     <lastmod>2021-09-17</lastmod>
     
@@ -94,13 +101,6 @@
   
   <url>
     <loc>https://samforit.github.io/2020/11/12/Github-broker/</loc>
-    
-    <lastmod>2021-09-17</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>https://samforit.github.io/2020/04/15/Amazon-S3-401/</loc>
     
     <lastmod>2021-09-17</lastmod>
     
