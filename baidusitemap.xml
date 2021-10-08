@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>https://samforit.github.io/2021/09/17/distributed-transaction/</loc>
+    <lastmod>2021-10-08</lastmod>
+  </url>
+  <url>
     <loc>https://samforit.github.io/2021/09/17/transaction/</loc>
     <lastmod>2021-09-26</lastmod>
   </url>
@@ -18,10 +22,6 @@
   </url>
   <url>
     <loc>https://samforit.github.io/2018/03/06/mysql-flush-hosts/</loc>
-    <lastmod>2021-09-26</lastmod>
-  </url>
-  <url>
-    <loc>https://samforit.github.io/2021/09/17/distributed-transaction/</loc>
     <lastmod>2021-09-26</lastmod>
   </url>
   <url>
