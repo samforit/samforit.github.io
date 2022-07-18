@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)">
+<meta name="generator" content="Hexo 5.4.2">
 
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
@@ -21,7 +22,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"samforit.github.io","root":"/","images":"/images","scheme":"Pisces","version":"8.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"samforit.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 <meta name="description" content="简介事务是什么？事务不是一个天然存在的东西，它是被人为创造出来，目的是简化应用层的编程模型。有了事务，应用程序可以不用考虑某些内部潜在的错误以及复杂的井发性问题，这些都可以交给数据库来负责处理，我们称之为安全性保证。即：事务是一种数据安全性保证的机制。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="事务-概览">
@@ -29,21 +30,21 @@
 <meta property="og:site_name" content="三木">
 <meta property="og:description" content="简介事务是什么？事务不是一个天然存在的东西，它是被人为创造出来，目的是简化应用层的编程模型。有了事务，应用程序可以不用考虑某些内部潜在的错误以及复杂的井发性问题，这些都可以交给数据库来负责处理，我们称之为安全性保证。即：事务是一种数据安全性保证的机制。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/car_invoices.png">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/avoid_uncommited_read.png">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/cannot_repeated_read.png">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/repeatedable_read_impl.png">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/virtual_read_of_two_doctor.png">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/much_lock.png">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/mvcc1.png">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/transaction/mvcc2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/transaction/car_invoices.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/transaction/avoid_uncommited_read.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/transaction/cannot_repeated_read.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/transaction/repeatedable_read_impl.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/transaction/virtual_read_of_two_doctor.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/transaction/much_lock.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/transaction/mvcc1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/transaction/mvcc2.png">
 <meta property="article:published_time" content="2021-09-17T08:37:23.000Z">
-<meta property="article:modified_time" content="2021-09-26T03:11:41.333Z">
+<meta property="article:modified_time" content="2022-07-18T11:10:18.742Z">
 <meta property="article:author" content="samforit">
 <meta property="article:tag" content="sql">
 <meta property="article:tag" content="transaction">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://samforit.github.io/2021/09/17/transaction/car_invoices.png">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/samforit/pic/main/transaction/car_invoices.png">
 
 
 <link rel="canonical" href="https://samforit.github.io/2021/09/17/transaction/">
@@ -269,7 +270,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-09-26 11:11:41" itemprop="dateModified" datetime="2021-09-26T11:11:41+08:00">2021-09-26</time>
+        <time title="修改时间：2022-07-18 19:10:18" itemprop="dateModified" datetime="2022-07-18T19:10:18+08:00">2022-07-18</time>
       </span>
 
   
@@ -362,13 +363,9 @@
 </div>
 
 <h1 id="读-未提交"><a href="#读-未提交" class="headerlink" title="读-未提交"></a>读-未提交</h1><p>读未提交可以提供以下保证：<br>写数据库肘，只会覆盖已成功提交的数据(防止“脏写”)</p>
-<p>首先来看一个【脏写】的示例：<br>买车的时候，需要同时更新【车辆，发票】。</p>
-<img src="/2021/09/17/transaction/car_invoices.png" class="" width="600">
-<p>该例最终会导致：Alice拥有发票，Bob拥有车辆。<br>而【读-未提交】可以避免该问题。</p>
+<p>首先来看一个【脏写】的示例：<br>买车的时候，需要同时更新【车辆，发票】。<br><img src="https://raw.githubusercontent.com/samforit/pic/main/transaction/car_invoices.png" alt="car_invoices.png"><br>该例最终会导致：Alice拥有发票，Bob拥有车辆。<br>而【读-未提交】可以避免该问题。</p>
 <h1 id="读-提交"><a href="#读-提交" class="headerlink" title="读-提交"></a>读-提交</h1><p>读-提交是最基本的的事务隔离级别，它只提供以下两个保证 :<br>读数据库肘，只能看到已成功提交的数据(防止“脏读”)。<br>写数据库肘，只会覆盖已成功提交的数据(防止“脏写”)。</p>
-<p>【防止脏写】上面我们已经介绍过了，结下来看一下【防止脏读】：<br>举例：用户2只有在用户1的事务提交之后才能看到x的新值</p>
-<img src="/2021/09/17/transaction/avoid_uncommited_read.png" class="" width="600">
-
+<p>【防止脏写】上面我们已经介绍过了，结下来看一下【防止脏读】：<br>举例：用户2只有在用户1的事务提交之后才能看到x的新值<br><img src="https://raw.githubusercontent.com/samforit/pic/main/transaction/avoid_uncommited_read.png" alt="avoid_uncommited_read.png"></p>
 <h2 id="实现读-提交"><a href="#实现读-提交" class="headerlink" title="实现读-提交"></a>实现读-提交</h2><table>
 <thead>
 <tr>
@@ -395,20 +392,15 @@
 </div>
 
 
-<p>首先举一个不可重复读的例子：</p>
-<img src="/2021/09/17/transaction/cannot_repeated_read.png" class="" width="600">
-<p>假设Alice在银行有1000美元的存款，分为两个账户，每个500美元。<br>现在有这样一笔转账交易：从账户1转100美元到账户2。【可以理解为定投100到理财账户】<br>如果在她提交转账请求之后，而银行数据库系统执行转账的过程中间，来查看两个账户的余额，她有可能会看到账号2在收到转账之前的余额(500美元)，和账户1在完成转账之后的余额(400美元)。<br>对于Alice巳来说，貌似她的账户总共只有900美元，有100美元消失了。<br>这种异常现象被称为不可重复读取(nonrepeatable read)或读倾斜(read skew)。<br>可重复读就是为了解决这种问题。</p>
-<h2 id="实现可重复读（快照级别隔离）"><a href="#实现可重复读（快照级别隔离）" class="headerlink" title="实现可重复读（快照级别隔离）"></a>实现可重复读（快照级别隔离）</h2><p>快照级别隔离的实现通常采用写锁来防止脏写(参阅前面的“实现读-提交”)，这意味着正在进行写操作的事务会阻止同一对象上的其他事务。<br>但是，读取则不需要加锁。<br>从性能角度看，快照级别隔离的一个关键点是读操作不会阻止写操作，反之亦然。<br>如果只是为了提供读-提交级别隔离，而不是完整的快照级别隔离，则只保留对象的两个版本就足够了:一个己提交的旧版本和尚未提交的新版本。<br>所以，支持快照级别隔离的存储引擎往往直接采用MVCC来实现读提交隔离。</p>
-<img src="/2021/09/17/transaction/repeatedable_read_impl.png" class="" width="600">
-
+<p>首先举一个不可重复读的例子：<br><img src="https://raw.githubusercontent.com/samforit/pic/main/transaction/cannot_repeated_read.png" alt="cannot_repeated_read.png"><br>假设Alice在银行有1000美元的存款，分为两个账户，每个500美元。<br>现在有这样一笔转账交易：从账户1转100美元到账户2。【可以理解为定投100到理财账户】<br>如果在她提交转账请求之后，而银行数据库系统执行转账的过程中间，来查看两个账户的余额，她有可能会看到账号2在收到转账之前的余额(500美元)，和账户1在完成转账之后的余额(400美元)。<br>对于Alice巳来说，貌似她的账户总共只有900美元，有100美元消失了。<br>这种异常现象被称为不可重复读取(nonrepeatable read)或读倾斜(read skew)。<br>可重复读就是为了解决这种问题。</p>
+<h2 id="实现可重复读（快照级别隔离）"><a href="#实现可重复读（快照级别隔离）" class="headerlink" title="实现可重复读（快照级别隔离）"></a>实现可重复读（快照级别隔离）</h2><p>快照级别隔离的实现通常采用写锁来防止脏写(参阅前面的“实现读-提交”)，这意味着正在进行写操作的事务会阻止同一对象上的其他事务。<br>但是，读取则不需要加锁。<br>从性能角度看，快照级别隔离的一个关键点是读操作不会阻止写操作，反之亦然。<br>如果只是为了提供读-提交级别隔离，而不是完整的快照级别隔离，则只保留对象的两个版本就足够了:一个己提交的旧版本和尚未提交的新版本。<br>所以，支持快照级别隔离的存储引擎往往直接采用MVCC来实现读提交隔离。<br><img src="https://raw.githubusercontent.com/samforit/pic/main/transaction/repeatedable_read_impl.png" alt="repeatedable_read_impl.png"></p>
 <div class="note info"><h4 id="一致性快照的可见性规则"><a href="#一致性快照的可见性规则" class="headerlink" title="一致性快照的可见性规则"></a>一致性快照的可见性规则</h4><p>通过上图我们可以看出，事务读数据库时，通过事务ID可以决定哪些对象可见，哪些不可见。<br>当以下两个条件都成立，则数据对象对事务可见:<br>1.事务开始的时刻，创建该对象的事务已经完成了提交。<br>2.对象没有被标记为删除；或者即使标记了，但删除事务在当前事务开始的时刻还没有完成提交。<br>可以看出，在事务的开始时刻就已经确定了哪些对象可见，哪些不可见。</p>
 </div>
 
 <h1 id="串行化"><a href="#串行化" class="headerlink" title="串行化"></a>串行化</h1><div class="note danger"><h5 id="Q：【可重复读】级别，还有什么解决不了的问题吗？"><a href="#Q：【可重复读】级别，还有什么解决不了的问题吗？" class="headerlink" title="Q：【可重复读】级别，还有什么解决不了的问题吗？"></a>Q：【可重复读】级别，还有什么解决不了的问题吗？</h5><p>A：幻读 + 写倾斜</p>
 </div>
 
-<p>举例：医院值班室需要保证至少要有1人在岗，现在A和B都在值班室，他们都认为现在有两个人在，自己下班后，还有另一个人在值班室，满足值班室最低1人在岗条件。所以他们都发起了下班请求：</p>
-<img src="/2021/09/17/transaction/virtual_read_of_two_doctor.png" class="" width="600">
+<p>举例：医院值班室需要保证至少要有1人在岗，现在A和B都在值班室，他们都认为现在有两个人在，自己下班后，还有另一个人在值班室，满足值班室最低1人在岗条件。所以他们都发起了下班请求：<br><img src="https://raw.githubusercontent.com/samforit/pic/main/transaction/virtual_read_of_two_doctor.png" alt="virtual_read_of_two_doctor.png"></p>
 <div class="note warning"><h5 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h5><p>幻读：在一个事务中的写入改变了另一个事务查询结果的现象。（从隔离性的角度来说，这种改变确实是不应该被感知到的）<br>写倾斜：事务首先查询数据，根据返回的结果而作出某些决定，然后修改数据库 。当事务提交时，支持决定的前提条件已不再成立。</p>
 </div>
 
@@ -440,8 +432,7 @@
 <li>如果事务首先读取对象，然后尝试写入对象，则需要将共享锁升级为独占锁。升级锁的流程等价于直接获得独占锁。 </li>
 <li>事务获得锁之后，一直持有锁直到事务结束(包括提交或中止)。<br>这也是名字“两阶段”的来由，在第一阶段即事务执行之前要获取锁，第二阶段(即事务结束时)则释放锁。</li>
 </ol>
-<h4 id="锁过多会导致的问题：死锁"><a href="#锁过多会导致的问题：死锁" class="headerlink" title="锁过多会导致的问题：死锁"></a>锁过多会导致的问题：死锁</h4><img src="/2021/09/17/transaction/much_lock.png" class="" width="600">
-<p>数据库系统会自动检测事务之间的死锁情况，并强行中止其中的一个以打破僵局，这样另一个可以继续向前执行。</p>
+<h4 id="锁过多会导致的问题：死锁"><a href="#锁过多会导致的问题：死锁" class="headerlink" title="锁过多会导致的问题：死锁"></a>锁过多会导致的问题：死锁</h4><p><img src="https://raw.githubusercontent.com/samforit/pic/main/transaction/much_lock.png" alt="much_lock.png"><br>数据库系统会自动检测事务之间的死锁情况，并强行中止其中的一个以打破僵局，这样另一个可以继续向前执行。</p>
 <div class="note danger"><p>但我们需要考虑的问题是：僵局打破后，线程1的数据就应该丢掉吗？应用层是否需要做重试？</p>
 </div>
 
@@ -487,8 +478,8 @@
 </tr>
 </thead>
 <tbody><tr>
-<td align="left"><img src="/2021/09/17/transaction/mvcc1.png" class="" width="400"></td>
-<td align="left"><img src="/2021/09/17/transaction/mvcc2.png" class="" width="400"></td>
+<td align="left"><img src="https://raw.githubusercontent.com/samforit/pic/main/transaction/mvcc1.png" alt="mvcc1.png"></td>
+<td align="left"><img src="https://raw.githubusercontent.com/samforit/pic/main/transaction/mvcc2.png" alt="mvcc2.png"></td>
 </tr>
 <tr>
 <td align="left">为什么要等到提交: 当检测到读旧值，为何不立即中止事务43呢? <br>如果事务43是个只读事务，没有任何写倾斜风险，就不需要中止。 <br>事务提交时，有可能事务42发生了中止或者还处于未提交状态，因此读取的并非是过期值。</td>
@@ -616,7 +607,7 @@
 
 <div class="copyright">
   &copy; 2018 – 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -631,11 +622,13 @@
 <script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
   
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
 <script src="/js/third-party/search/local-search.js"></script>
 
 
-  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.12.0/dist/mermaid.min.js","integrity":"sha256-0dD7vUjUCTGJjeLnPotQQJIcSzug5fO6WDMYYyNIX4c="}}</script>
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.13.2/dist/mermaid.min.js","integrity":"sha256-UIQPVkGifpwMvDH5yGgORJ9sSTDq38zz6BGU6dNaKhM="}}</script>
   <script src="/js/third-party/tags/mermaid.js"></script>
+
 
 
   

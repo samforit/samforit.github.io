@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)">
+<meta name="generator" content="Hexo 5.4.2">
 
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
@@ -21,7 +22,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"samforit.github.io","root":"/","images":"/images","scheme":"Pisces","version":"8.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"samforit.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 <meta name="description" content="简介Q：分布式事务主要解决的问题是什么？A：分布式场景下的【原子性】">
 <meta property="og:type" content="article">
 <meta property="og:title" content="事务-分布式事务">
@@ -29,21 +30,21 @@
 <meta property="og:site_name" content="三木">
 <meta property="og:description" content="简介Q：分布式事务主要解决的问题是什么？A：分布式场景下的【原子性】">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/distributed-transaction/distributed-transaction1.png">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/distributed-transaction/distributed-transaction2.png">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/distributed-transaction/distributed-transaction3.png">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/distributed-transaction/distributed-transaction4.png">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/distributed-transaction/distributed-transaction5.png">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/distributed-transaction/distributed-transaction7.png">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/distributed-transaction/distributed-transaction8.png">
-<meta property="og:image" content="https://samforit.github.io/2021/09/17/distributed-transaction/distributed-transaction9.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction4.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction5.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction7.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction8.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction9.png">
 <meta property="article:published_time" content="2021-09-17T08:37:59.000Z">
-<meta property="article:modified_time" content="2021-10-08T03:35:04.265Z">
+<meta property="article:modified_time" content="2022-07-18T07:56:16.895Z">
 <meta property="article:author" content="samforit">
 <meta property="article:tag" content="sql">
 <meta property="article:tag" content="transaction">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://samforit.github.io/2021/09/17/distributed-transaction/distributed-transaction1.png">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction1.png">
 
 
 <link rel="canonical" href="https://samforit.github.io/2021/09/17/distributed-transaction/">
@@ -269,7 +270,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-10-08 11:35:04" itemprop="dateModified" datetime="2021-10-08T11:35:04+08:00">2021-10-08</time>
+        <time title="修改时间：2022-07-18 15:56:16" itemprop="dateModified" datetime="2022-07-18T15:56:16+08:00">2022-07-18</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -300,20 +301,18 @@
 
 <span id="more"></span>
 
-<h2 id="场景举例"><a href="#场景举例" class="headerlink" title="场景举例"></a>场景举例</h2><img src="/2021/09/17/distributed-transaction/distributed-transaction1.png" class="" width="400">
-<p>小明买口红遇到的问题：<br>两个色号的口红都想要，必须保证【要么两只都买到，要么两只都不买】<br>如何解决?</p>
+<h2 id="场景举例"><a href="#场景举例" class="headerlink" title="场景举例"></a>场景举例</h2><p><img src="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction1.png" alt="distributed-transaction1.png"><br>小明买口红遇到的问题：<br>两个色号的口红都想要，必须保证【要么两只都买到，要么两只都不买】<br>如何解决?</p>
 <p>从未听说过分布式事务概念的人也能想出办法：提前预定。</p>
 <ol>
 <li>两家⻔店都预定成功：分别去购买(要求预定后一定能 成功购买)。 </li>
 <li>任意⻔店预定不成功：取消已预定成功的⻔店，不去购买。<br>上述方案即是分布式事务的原型，也是核心思想==&gt;两阶段提交</li>
 </ol>
-<h1 id="两阶段提交"><a href="#两阶段提交" class="headerlink" title="两阶段提交"></a>两阶段提交</h1><h2 id="工作过程"><a href="#工作过程" class="headerlink" title="工作过程"></a>工作过程</h2><img src="/2021/09/17/distributed-transaction/distributed-transaction2.png" class="" width="600">
-
+<h1 id="两阶段提交"><a href="#两阶段提交" class="headerlink" title="两阶段提交"></a>两阶段提交</h1><h2 id="工作过程"><a href="#工作过程" class="headerlink" title="工作过程"></a>工作过程</h2><p><img src="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction2.png" alt="distributed-transaction2.png"></p>
 <h3 id="关键节点"><a href="#关键节点" class="headerlink" title="关键节点"></a>关键节点</h3><p>首先，当参与者投票“是”时，它做出了肯定提交的承诺(尽管还取决于其他的参与者的投票，协调者才能做出最后决断)。<br>其次，协调者做出了提交(或者放弃)的决定，这个决定也是不可撤销。<br>正是这两个承诺确保了2PC的原子性(而单节点原子提交其实是将两个事件合二为一，写入事务日志即提交)</p>
 <h3 id="概念区分"><a href="#概念区分" class="headerlink" title="概念区分"></a>概念区分</h3><div class="note info"><h4 id="两阶段提交（2PC）-VS-两阶段加锁（2PL）"><a href="#两阶段提交（2PC）-VS-两阶段加锁（2PL）" class="headerlink" title="两阶段提交（2PC） VS 两阶段加锁（2PL）"></a>两阶段提交（2PC） VS 两阶段加锁（2PL）</h4><p>两阶段提交（2PC）在分布式数据库中负责原子提交<br>两阶段加锁（2PL）则提供可串行化隔离</p>
 </div>
 
-<h2 id="协调者发生故障"><a href="#协调者发生故障" class="headerlink" title="协调者发生故障"></a>协调者发生故障</h2><img src="/2021/09/17/distributed-transaction/distributed-transaction3.png" class="" width="600">
+<h2 id="协调者发生故障"><a href="#协调者发生故障" class="headerlink" title="协调者发生故障"></a>协调者发生故障</h2><p><img src="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction3.png" alt="distributed-transaction3.png"></p>
 <div class="note warning"><p>2PC能够顺利完成的唯一方法是等待协调者恢复。</p>
 </div>
 
@@ -339,8 +338,7 @@
 <h1 id="分布式事务的具体实现方案"><a href="#分布式事务的具体实现方案" class="headerlink" title="分布式事务的具体实现方案"></a>分布式事务的具体实现方案</h1><h2 id="TCC"><a href="#TCC" class="headerlink" title="TCC"></a>TCC</h2><blockquote>
 <p>TCC 是一种成熟的分布式事务解决方案，属于柔性补偿型，优点在于容易理解。</p>
 </blockquote>
-<img src="/2021/09/17/distributed-transaction/distributed-transaction4.png" class="" width="600">
-
+<p><img src="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction4.png" alt="distributed-transaction4.png"></p>
 <p>TCC 是服务层面的2阶段编程模型。业务需要编码实现3个接口(Try、Confirm、Cancel) :</p>
 <ul>
 <li>Try 操作作为一阶段，主要负责资源的检查和预留。 </li>
@@ -385,13 +383,11 @@
 <td align="left">预加资金解除</td>
 </tr>
 </tbody></table>
-<p>活期账户各阶段流程如下所示【理财账户同理】：</p>
-<img src="/2021/09/17/distributed-transaction/distributed-transaction5.png" class="" width="600">
-
+<p>活期账户各阶段流程如下所示【理财账户同理】：<br><img src="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction5.png" alt="distributed-transaction5.png"></p>
 <h2 id="TXC"><a href="#TXC" class="headerlink" title="TXC"></a>TXC</h2><p>TXC将分布式事务操作下放至JDBC层，通过SQL拦截改写实现数据正向提交和逆向补偿。</p>
 <ul>
 <li>优点：业务基本无需改造。 </li>
-<li>缺点：只支持数据库。<br>TXC是除TCC外另一种应用较为广泛的分布式事务实现。<img src="/2021/09/17/distributed-transaction/distributed-transaction7.png" class="" width="600"></li>
+<li>缺点：只支持数据库。<br>TXC是除TCC外另一种应用较为广泛的分布式事务实现。<br><img src="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction7.png" alt="distributed-transaction7.png"></li>
 </ul>
 <h2 id="sage"><a href="#sage" class="headerlink" title="sage"></a>sage</h2><p>saga一般用于处理⻓活事务，即链路较⻓的事务性操作，也是通过正向操作+逆向补偿的思想实现事务，与TCC较为类似。<br>saga与TCC的最大不同是saga没有try阶段，即没有预留资源的操作，可用于较为简单的业务，但也由于没有预留资源，因此补偿动作也更麻烦。</p>
 <h4 id="举个例子：购买商品"><a href="#举个例子：购买商品" class="headerlink" title="举个例子：购买商品"></a>举个例子：购买商品</h4><table>
@@ -402,8 +398,8 @@
 </tr>
 </thead>
 <tbody><tr>
-<td align="left"><img src="/2021/09/17/distributed-transaction/distributed-transaction8.png" class="" width="400"></td>
-<td align="left"><img src="/2021/09/17/distributed-transaction/distributed-transaction9.png" class="" width="400"></td>
+<td align="left"><img src="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction8.png" alt="distributed-transaction8.png"></td>
+<td align="left"><img src="https://raw.githubusercontent.com/samforit/pic/main/distributed-transaction/distributed-transaction9.png" alt="distributed-transaction9.png"></td>
 </tr>
 </tbody></table>
 <p>Saga 的适用场景</p>
@@ -462,7 +458,7 @@
 
 <div class="copyright">
   &copy; 2018 – 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -477,11 +473,13 @@
 <script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
   
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
 <script src="/js/third-party/search/local-search.js"></script>
 
 
-  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.12.0/dist/mermaid.min.js","integrity":"sha256-0dD7vUjUCTGJjeLnPotQQJIcSzug5fO6WDMYYyNIX4c="}}</script>
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.13.2/dist/mermaid.min.js","integrity":"sha256-UIQPVkGifpwMvDH5yGgORJ9sSTDq38zz6BGU6dNaKhM="}}</script>
   <script src="/js/third-party/tags/mermaid.js"></script>
+
 
 
   

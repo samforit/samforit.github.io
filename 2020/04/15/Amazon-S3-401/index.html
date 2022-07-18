@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 5.4.0">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#222" media="(prefers-color-scheme: dark)">
+<meta name="generator" content="Hexo 5.4.2">
 
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
@@ -21,7 +22,7 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" integrity="sha256-mUZM63G8m73Mcidfrv5E+Y61y7a12O5mW4ezU3bxqW4=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"samforit.github.io","root":"/","images":"/images","scheme":"Pisces","version":"8.7.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"samforit.github.io","root":"/","images":"/images","scheme":"Pisces","darkmode":true,"version":"8.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":false,"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 <meta name="description" content="遇到的问题通过S3上传文件，如果存储文件名中有英文括号，则S3服务端会返回鉴权失败【401】。出现问题的代码如下所示：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="【问题梳理】AmazonS3文件名包含英文括号导致401">
@@ -29,24 +30,24 @@
 <meta property="og:site_name" content="三木">
 <meta property="og:description" content="遇到的问题通过S3上传文件，如果存储文件名中有英文括号，则S3服务端会返回鉴权失败【401】。出现问题的代码如下所示：">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://samforit.github.io/2020/04/15/Amazon-S3-401/1.png">
-<meta property="og:image" content="https://samforit.github.io/2020/04/15/Amazon-S3-401/S3-framework.png">
-<meta property="og:image" content="https://samforit.github.io/2020/04/15/Amazon-S3-401/2.png">
-<meta property="og:image" content="https://samforit.github.io/2020/04/15/Amazon-S3-401/3.png">
-<meta property="og:image" content="https://samforit.github.io/2020/04/15/Amazon-S3-401/5.png">
-<meta property="og:image" content="https://samforit.github.io/2020/04/15/Amazon-S3-401/6.png">
-<meta property="og:image" content="https://samforit.github.io/2020/04/15/Amazon-S3-401/7.png">
-<meta property="og:image" content="https://samforit.github.io/2020/04/15/Amazon-S3-401/8.png">
-<meta property="og:image" content="https://samforit.github.io/2020/04/15/Amazon-S3-401/9.png">
-<meta property="og:image" content="https://samforit.github.io/2020/04/15/Amazon-S3-401/11.png">
-<meta property="og:image" content="https://samforit.github.io/2020/04/15/Amazon-S3-401/12.png">
-<meta property="og:image" content="https://samforit.github.io/2020/04/15/Amazon-S3-401/13.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/1.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/S3-framework.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/2.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/3.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/5.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/6.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/7.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/8.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/9.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/11.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/12.png">
+<meta property="og:image" content="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/13.png">
 <meta property="article:published_time" content="2020-04-15T03:22:58.000Z">
-<meta property="article:modified_time" content="2021-09-26T03:11:41.302Z">
+<meta property="article:modified_time" content="2022-07-18T09:01:05.338Z">
 <meta property="article:author" content="samforit">
 <meta property="article:tag" content="bug">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://samforit.github.io/2020/04/15/Amazon-S3-401/1.png">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/1.png">
 
 
 <link rel="canonical" href="https://samforit.github.io/2020/04/15/Amazon-S3-401/">
@@ -272,7 +273,7 @@
           <i class="far fa-calendar-check"></i>
         </span>
         <span class="post-meta-item-text">更新于</span>
-        <time title="修改时间：2021-09-26 11:11:41" itemprop="dateModified" datetime="2021-09-26T11:11:41+08:00">2021-09-26</time>
+        <time title="修改时间：2022-07-18 17:01:05" itemprop="dateModified" datetime="2022-07-18T17:01:05+08:00">2022-07-18</time>
       </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -297,10 +298,8 @@
         <h1 id="遇到的问题"><a href="#遇到的问题" class="headerlink" title="遇到的问题"></a>遇到的问题</h1><p>通过S3上传文件，如果存储文件名中有英文括号，则S3服务端会返回鉴权失败【401】。出现问题的代码如下所示：</p>
 <span id="more"></span>
 
-<img src="/2020/04/15/Amazon-S3-401/1.png" class="" width="600">
-
-<h1 id="S3文件上传流程"><a href="#S3文件上传流程" class="headerlink" title="S3文件上传流程"></a>S3文件上传流程</h1><img src="/2020/04/15/Amazon-S3-401/S3-framework.png" class="" width="600">
-
+<p><img src="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/1.png" alt="1.png"></p>
+<h1 id="S3文件上传流程"><a href="#S3文件上传流程" class="headerlink" title="S3文件上传流程"></a>S3文件上传流程</h1><p><img src="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/S3-framework.png" alt="S3-framework.png"></p>
 <h1 id="出现问题的地方"><a href="#出现问题的地方" class="headerlink" title="出现问题的地方"></a>出现问题的地方</h1><p>org.apache.http.client.utils.URIUtils#rewriteURI</p>
 <table>
 <thead>
@@ -319,15 +318,10 @@
 </tr>
 </tbody></table>
 <p>导致鉴权失败，返回401。</p>
-<h1 id="细节分析"><a href="#细节分析" class="headerlink" title="细节分析"></a>细节分析</h1><h2 id="本来Request中的uri是http-s3-bk-sam-28t-29hh-txt，为什么apache会进行rewrite？"><a href="#本来Request中的uri是http-s3-bk-sam-28t-29hh-txt，为什么apache会进行rewrite？" class="headerlink" title="本来Request中的uri是http://s3/bk/sam%28t%29hh.txt，为什么apache会进行rewrite？"></a>本来Request中的uri是<code>http://s3/bk/sam%28t%29hh.txt</code>，为什么apache会进行rewrite？</h2><img src="/2020/04/15/Amazon-S3-401/2.png" class="" width="600">
-<p>rewrite的逻辑如上图所示，主要目的是去除url中的无效路径。<br>同时，我们通过代码可以看出，无论是否有空节点，最终都会执行uribuilder.setPathSegment(pathSegments);<br>在4.5.10中已经解决了这个问题，如果发现并没有进行空节点的remove操作，这里就不会执行uribuilder.setPathSegment(pathSegments);  </p>
-<h2 id="rewrite的具体流程是什么"><a href="#rewrite的具体流程是什么" class="headerlink" title="rewrite的具体流程是什么"></a>rewrite的具体流程是什么</h2><p>可以详细看看【图3】中的setPathSegment干了什么：将encodedPath设置为null;</p>
-<img src="/2020/04/15/Amazon-S3-401/3.png" class="" width="600">
-
-<p>在进行【图3】中所示的uribuilder.build操作的时候，如下图所示，会对pathSetment重新进行encodePath。<br>[“bk”,”sam(t)hh.txt”] [“bk”,”sam(t)hh.txt”]<br>本例中，pathSetment包含两个元素 [“bk”,”sam(t)hh.txt”]</p>
-<img src="/2020/04/15/Amazon-S3-401/5.png" class="" width="600">
-
-<p>encodePath最终调用的是org.apache.http.client.utils.URLEncodedUtils#urlEncode方法<br>这里就很明显了，如果是在safechars集合中的字符，则不需要进行转码。<br>这里的safechars = PATHSAFE如，PATHSAFE 包含 UNRESERVED<br>根据标准UNRESERVED应该包含英文括号，即英文括号不需要被转码。<br>如下图所示</p>
+<h1 id="细节分析"><a href="#细节分析" class="headerlink" title="细节分析"></a>细节分析</h1><h2 id="本来Request中的uri是http-s3-bk-sam-28t-29hh-txt，为什么apache会进行rewrite？"><a href="#本来Request中的uri是http-s3-bk-sam-28t-29hh-txt，为什么apache会进行rewrite？" class="headerlink" title="本来Request中的uri是http://s3/bk/sam%28t%29hh.txt，为什么apache会进行rewrite？"></a>本来Request中的uri是<code>http://s3/bk/sam%28t%29hh.txt</code>，为什么apache会进行rewrite？</h2><p><img src="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/2.png" alt="2.png"><br>rewrite的逻辑如上图所示，主要目的是去除url中的无效路径。<br>同时，我们通过代码可以看出，无论是否有空节点，最终都会执行uribuilder.setPathSegment(pathSegments);<br>在4.5.10中已经解决了这个问题，如果发现并没有进行空节点的remove操作，这里就不会执行uribuilder.setPathSegment(pathSegments);  </p>
+<h2 id="rewrite的具体流程是什么"><a href="#rewrite的具体流程是什么" class="headerlink" title="rewrite的具体流程是什么"></a>rewrite的具体流程是什么</h2><p>可以详细看看【图3】中的setPathSegment干了什么：将encodedPath设置为null;<br><img src="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/3.png" alt="3.png"></p>
+<p>在进行【图3】中所示的uribuilder.build操作的时候，如下图所示，会对pathSetment重新进行encodePath。<br>[“bk”,”sam(t)hh.txt”] [“bk”,”sam(t)hh.txt”]<br>本例中，pathSetment包含两个元素 [“bk”,”sam(t)hh.txt”]<br><img src="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/5.png" alt="5.png"></p>
+<p>encodePath最终调用的是org.apache.http.client.utils.URLEncodedUtils#urlEncode方法<br>这里就很明显了，如果是在safechars集合中的字符，则不需要进行转码。<br>这里的safechars = PATHSAFE如，PATHSAFE 包含 UNRESERVED<br>根据<a target="_blank" rel="noopener" href="https://www.ietf.org/rfc/rfc2396.txt">RFC-2396</a>标准UNRESERVED应该包含英文括号，即英文括号不需要被转码。<br>如下图所示</p>
 <table>
 <thead>
 <tr>
@@ -336,25 +330,19 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><img src="/2020/04/15/Amazon-S3-401/6.png" class="" width="400"></td>
-<td><img src="/2020/04/15/Amazon-S3-401/7.png" class="" width="400"></td>
+<td><img src="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/6.png" alt="6.png"></td>
+<td><img src="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/7.png" alt="7.png"></td>
 </tr>
 <tr>
-<td><img src="/2020/04/15/Amazon-S3-401/8.png" class="" width="400"></td>
-<td><img src="/2020/04/15/Amazon-S3-401/9.png" class="" width="400"></td>
+<td><img src="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/8.png" alt="8.png"></td>
+<td><img src="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/9.png" alt="9.png"></td>
 </tr>
 </tbody></table>
 <p>所以进行uribuilder.build之后，pathSetment包含的两个元素 [“bk”,”sam(t)hh.txt”]，所有字符都不会被转码，生成的最终uri就成了：<code>http://s3/bk/sam(t)hh.txt</code>。</p>
-<h2 id="S3在创建HttpRequest的时候，英文括号为什么会被转码：http-s3-bk-sam-28t-29hh-txt"><a href="#S3在创建HttpRequest的时候，英文括号为什么会被转码：http-s3-bk-sam-28t-29hh-txt" class="headerlink" title="S3在创建HttpRequest的时候，英文括号为什么会被转码：http://s3/bk/sam%28t%29hh.txt"></a>S3在创建HttpRequest的时候，英文括号为什么会被转码：<code>http://s3/bk/sam%28t%29hh.txt</code></h2><p>S3生成的URI，是经过Java原生的UrlEncoder进行encode的：</p>
-<img src="/2020/04/15/Amazon-S3-401/11.png" class="" width="600">
-
-<p>这里不需要转码的集合【dontNeedEncoding】如下所示：</p>
-<img src="/2020/04/15/Amazon-S3-401/12.png" class="" width="600">
-
+<h2 id="S3在创建HttpRequest的时候，英文括号为什么会被转码：http-s3-bk-sam-28t-29hh-txt"><a href="#S3在创建HttpRequest的时候，英文括号为什么会被转码：http-s3-bk-sam-28t-29hh-txt" class="headerlink" title="S3在创建HttpRequest的时候，英文括号为什么会被转码：http://s3/bk/sam%28t%29hh.txt"></a>S3在创建HttpRequest的时候，英文括号为什么会被转码：<code>http://s3/bk/sam%28t%29hh.txt</code></h2><p>S3生成的URI，是经过Java原生的UrlEncoder进行encode的：<br><img src="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/11.png" alt="11.png"></p>
+<p>这里不需要转码的集合【dontNeedEncoding】如下所示：<br><img src="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/12.png" alt="12.png"></p>
 <p>其中不包含英文括号，所以英文括号也会被转码，导致生成的URI就是：<code>http://s3/bk/sam%28t%29hh.txt</code><br>然后S3-Client认为该URI【<code>http://s3/bk/sam%28t%29hh.txt</code>】就是需要访问的资源，通过该URI生成权限签名Sign-Auth。<br>但是最终Apache-client经过rewrite之后的Uri却是：【<code>http://s3/bk/sam(t)hh.txt</code>】, 所以S3的会报权限异常401【Sign-Auth与真实访问的资源URI不匹配】。</p>
-<h1 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h1><p>这个问题在apache的httpclient 4.5.10版本中已经没有出现了。原因如下：</p>
-<img src="/2020/04/15/Amazon-S3-401/13.png" class="" width="600">
-
+<h1 id="解决"><a href="#解决" class="headerlink" title="解决"></a>解决</h1><p>这个问题在apache的httpclient 4.5.10版本中已经没有出现了。原因如下：<br><img src="https://raw.githubusercontent.com/samforit/pic/main/Amazon-S3-401/13.png" alt="13.png"></p>
 <h1 id="后续"><a href="#后续" class="headerlink" title="后续"></a>后续</h1><p>其实这个问题的本质在于：</p>
 <h2 id="S3生成url鉴权的时候，用的Java-UrlEncoder。对英文括号要进行转码。"><a href="#S3生成url鉴权的时候，用的Java-UrlEncoder。对英文括号要进行转码。" class="headerlink" title="S3生成url鉴权的时候，用的Java-UrlEncoder。对英文括号要进行转码。"></a>S3生成url鉴权的时候，用的Java-UrlEncoder。对英文括号要进行转码。</h2><h2 id="底层执行http请求的时候用的-Apache-httpclient，会对uri进行rewrite，不会对英文括号进行转码。"><a href="#底层执行http请求的时候用的-Apache-httpclient，会对uri进行rewrite，不会对英文括号进行转码。" class="headerlink" title="底层执行http请求的时候用的 Apache-httpclient，会对uri进行rewrite，不会对英文括号进行转码。"></a>底层执行http请求的时候用的 Apache-httpclient，会对uri进行rewrite，不会对英文括号进行转码。</h2><p>导致异常。<br>apache 4.5.10以前，不论是否有空节点，都会进行setPathSegments，从而导致重新encode。【对英文括号不转码】<br>apache 4.5.10及以后，如果路径中没有空节点，就不会进行setPathSegments，直接沿用原来的encodePath。</p>
 
@@ -402,7 +390,7 @@
 
 <div class="copyright">
   &copy; 2018 – 
-  <span itemprop="copyrightYear">2021</span>
+  <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
@@ -417,11 +405,13 @@
 <script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
 
   
+<script src="https://cdn.jsdelivr.net/npm/hexo-generator-searchdb@1.4.0/dist/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
 <script src="/js/third-party/search/local-search.js"></script>
 
 
-  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.12.0/dist/mermaid.min.js","integrity":"sha256-0dD7vUjUCTGJjeLnPotQQJIcSzug5fO6WDMYYyNIX4c="}}</script>
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":"forest","js":{"url":"https://cdn.jsdelivr.net/npm/mermaid@8.13.2/dist/mermaid.min.js","integrity":"sha256-UIQPVkGifpwMvDH5yGgORJ9sSTDq38zz6BGU6dNaKhM="}}</script>
   <script src="/js/third-party/tags/mermaid.js"></script>
+
 
 
   
