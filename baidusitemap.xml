@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://samforit.github.io/2021/09/17/transaction/</loc>
+    <loc>https://samforit.github.io/2021/09/17/distributed-transaction/</loc>
     <lastmod>2022-07-18</lastmod>
   </url>
   <url>
-    <loc>https://samforit.github.io/2020/04/15/Amazon-S3-401/</loc>
+    <loc>https://samforit.github.io/2019/10/12/Java-IO/</loc>
     <lastmod>2022-07-18</lastmod>
   </url>
   <url>
@@ -13,15 +13,15 @@
     <lastmod>2022-07-18</lastmod>
   </url>
   <url>
-    <loc>https://samforit.github.io/2021/09/17/distributed-transaction/</loc>
-    <lastmod>2022-07-18</lastmod>
-  </url>
-  <url>
     <loc>https://samforit.github.io/2019/10/11/Unix-IO/</loc>
     <lastmod>2022-07-18</lastmod>
   </url>
   <url>
-    <loc>https://samforit.github.io/2019/10/12/Java-IO/</loc>
+    <loc>https://samforit.github.io/2021/09/17/transaction/</loc>
+    <lastmod>2022-07-18</lastmod>
+  </url>
+  <url>
+    <loc>https://samforit.github.io/2020/04/15/Amazon-S3-401/</loc>
     <lastmod>2022-07-18</lastmod>
   </url>
   <url>
